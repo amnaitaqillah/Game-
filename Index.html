@@ -1,83 +1,51 @@
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Game Tembak-Tembakan Palestina</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🔥 Game Tembak-Tembakan Palestina 🔥</h1>
+    <p>Bela keadilan, raih kemenangan!</p>
+  </header>
 
-  <!-- ====== CSS LANGSUNG DI SINI ====== -->
-  <style>
-    :root {
-      --hitam: #000;
-      --putih: #fff;
-      --merah: #d32f2f;
-      --hijau: #388e3c;
-    }
+  <nav>
+    <a href="#beranda">Beranda</a>
+    <a href="#tentang">Tentang</a>
+    <a href="#galeri">Galeri</a>
+    <a href="#mulai">Mulai Main</a>
+    <a href="#kontak">Kontak</a>
+  </nav>
 
-    body {
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      background-color: var(--hitam);
-      color: var(--putih);
-      overflow-x: hidden;
-    }
+  <section class="hero" id="beranda">
+    <h1>Siap Bertempur?</h1>
+    <p>Masuki dunia pertempuran penuh aksi dan semangat perjuangan!</p>
+    <button onclick="alert('Mode bermain segera hadir!')">Mulai Main</button>
+  </section>
 
-    /* ===== HEADER ===== */
-    header {
-      background: linear-gradient(to right, var(--hijau), var(--hitam), var(--merah));
-      text-align: center;
-      padding: 20px;
-      animation: slideDown 1s ease-in-out;
-    }
+  <section class="content" id="tentang">
+    <h2>Tentang Game</h2>
+    <p>
+      Game ini mengusung tema perjuangan dan keberanian. Tugasmu adalah melindungi wilayah
+      Palestina dari serangan musuh dengan strategi dan refleks cepat!
+    </p>
+  </section>
 
-    header h1 {
-      margin: 0;
-      font-size: 2em;
-    }
+  <section class="content" id="galeri">
+    <h2>Galeri Pertempuran</h2>
+    <div class="gallery">
+      <img src="https://i.ibb.co/vzxnzXM/soldier1.jpg" alt="Prajurit" />
+      <img src="https://i.ibb.co/pz1RXhm/soldier2.jpg" alt="Senjata" />
+      <img src="https://i.ibb.co/0YF4PjC/battle2.jpg" alt="Pertempuran" />
+    </div>
+  </section>
 
-    @keyframes slideDown {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    /* ===== NAVIGASI ===== */
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      background: var(--hitam);
-      border-top: 2px solid var(--hijau);
-      border-bottom: 2px solid var(--merah);
-      padding: 10px;
-    }
-
-    nav a {
-      color: var(--putih);
-      text-decoration: none;
-      font-weight: bold;
-      transition: all 0.3s;
-    }
-
-    nav a:hover {
-      color: var(--merah);
-      transform: scale(1.1);
-    }
-
-    /* ===== HALAMAN UTAMA ===== */
-    .hero {
-      background: url('https://i.ibb.co/XChBscY/battle-bg.jpg') center/cover no-repeat;
-      text-align: center;
-      padding: 100px 20px;
-      color: var(--putih);
-      animation: fadeIn 2s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .hero h1 {
-      font-size: 3em;
-      color: var(--hijau);
-      text-shadow    
+  <footer id="kontak">
+    <p>Hubungi Kami: <strong>support@gamepalestina.com</strong></p>
+    <p>🇵🇸 Semangat Perjuangan • Game of Freedom</p>
+  </footer>
+</body>
+</html>
