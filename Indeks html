@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FPS Zone — Game Tembak-tembakan (Demo)</title>
+  <meta name="description" content="Demo website game tembak-tembakan — tema Palestina. Ada musik latar sintetis, animasi, efek hover, dan halaman Mulai Main (mini-game)." />
+  <style>
+    :root{
+      --pal-black:#0b0b0b;
+      --pal-white:#f7f7f7;
+      --pal-red:#CE1126;
+      --pal-green:#007A3D;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background:
+        radial-gradient(800px 400px at 8% 12%, rgba(0,122,61,0.06), transparent 10%),
+        radial-gradient(600px 300px at 92% 86%, rgba(206,17,38,0.06), transparent 12%),
+        linear-gradient(180deg,#060606 0%, #0d0d0d 100%);
+      color:var(--pal-white);
+      padding:28px;
+      display:flex;
+      justify-content:center;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .wrap{ width:100%; max-width:1100px; }
+
+    header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:20px; }
+    .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--pal-white) }
+    .logo{ width:56px; height:56px; border-radius:12px; display:grid; place-items:center;
+      background: linear-gradient(135deg,var(--pal-red),var(--pal-green)); transform:rotate(-8deg);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
+    .logo span{ font-weight:800; font-size:20px; color:#fff }
+    nav{ display:flex; gap:8px; align-items:center; }
+    nav a{ color:var(--pal-white); text-decoration:none; padding:8px 12px; border-radius:10px; font-weight:700; opacity:0.95;
+      transition: transform .18s, box-shadow .18s; }
+    nav a:hover{ transform:translateY(-4px); box-shadow:0 10px 30px rgba(0,0,0,0.6); background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent) }
+
+    main.hero{ display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:start; margin-bottom:22px; }
+    .card{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:20px; border-radius:var(--radius);
+      box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); overflow:hidden; }
+    .tag{ display:inline-block; padding:6px 10px; border-radius:999px; font-weight:800; background:linear-gradient(90deg,var(--pal-red),var(--pal-green)); color:#fff; animation:pulse 3s infinite; }
+    @keyframes pulse{ 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+    h1{ margin:10px 0 8px; font-size:30px }
+    .lead{ color:rgba(255,255,255,0.85); margin-bottom:14px }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap }
+    .btn{ cursor:pointer; padding:11px 14px; border-radius:12px; font-weight:800; border:0; transition:transform .18s, box-shadow .18s }
+    .btn.primary{ background:linear-gradient(90deg,var(--pal-red),var(--pal-green)); color:#fff; box-shadow:0 8px 26px rgba(0,0,0,0.45) }
+    .btn.ghost{ background:transparent; color:var(--pal-white); border:1px solid rgba(255,255,255,0.04) }
+    .btn:hover{ transform:translateY(-6px) scale(1.02) }
+
+    .hud{ display:flex; flex-direction:column; gap:12px }
+    .stat{ display:flex; gap:12px; align-items:center; padding:12px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent); border:1px solid rgba(255,255,255,0.02); transition:transform .18s }
+    .stat:hover{ transform:translateY(-6px); box-shadow:0 16px 36px rgba(0,0,0,0.6) }
+    .icon{ width:48px; height:48px; border-radius:10px; display:grid; place-items:center; font-weight:900; background:linear-gradient(135deg,var(--pal-black), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.03) }
+
+    section{ margin-bottom:16px }
+    .gallery{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px }
+    .shot{ height:140px; border-radius:12px; overflow:hidden; position:relative; background-size:cover; background-position:center; border:1px solid rgba(255,255,255,0.03); transition: transform .28s, box-shadow .28s }
+    .shot:hover{ transform:translateY(-10px) scale(1.03); box-shadow:0 30px 70px rgba(0,0,0,0.7) }
+    .shot:before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.35)); }
+
+    .downloads{ display:flex; gap:12px; flex-wrap:wrap; }
+    .download-badge{ padding:10px 12px; border-radius:12px; min-width:160px; display:flex; gap:10px; align-items:center; font-weight:800; background:linear-gradient(90deg, rgba(255,255,255,0.03), transparent); border:1px solid rgba(255,255,255,0.03); transition:transform .18s }
+    .download-badge:hover{ transform:translateY(-6px) }
+
+    /* START SCREEN (overlay) */
+    #startOverlay{
+      position:fixed; inset:0; display:grid; place-items:center; z-index:80;
+      background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.85));
+      backdrop-filter: blur(6px);
+    }
+    .start-card{ width:92%; max-width:760px; padding:24px; border-radius:18px; text-align:center; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); box-shadow:var(--shadow); }
+    .start-title{ font-size:28px; font-weight:900; margin-bottom:6px }
+    .start-sub{ color:rgba(255,255,255,0.8); margin-bottom:18px }
+
+    /* MINI-GAME AREA */
+    #gameArea{ position:relative; height:360px; border-radius:12px; overflow:hidden; background:linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.28)); border:1px solid rgba(255,255,255,0.03) }
+    .crosshair{
+      position:absolute; left:50%; top:50%; width:44px; height:44px; margin-left:-22px; margin-top:-22px; pointer-events:none;
+      display:grid; place-items:center; transform:translateZ(0); opacity:0.9;
+    }
+    .crosshair div{ width:26px; height:26px; border-radius:50%; border:2px solid rgba(255,255,255,0.85); background:transparent }
+    .target{
+      position:absolute; width:64px; height:64px; border-radius:50%; display:grid; place-items:center; font-weight:900;
+      color:#fff; background:linear-gradient(135deg,var(--pal-red), var(--pal-green)); border:2px solid rgba(255,255,255,0.08); box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      cursor:crosshair; transition: transform .12s ease;
+    }
+    .target:active{ transform:scale(.92) }
+
+    .hud-top{ display:flex; justify-content:space-between; gap:12px; margin-bottom:10px; align-items:center }
+    .score{ font-weight:900; font-size:18px }
+    .controls{ display:flex; gap:8px; align-items:center }
+
+    footer{ text-align:center; color:rgba(255,255,255,0.6); margin-top:14px; font-size:13px }
+
+    /* responsive */
+    @media (max-width:980px){ main.hero{ grid-template-columns:1fr; } .gallery{ grid-template-columns:repeat(2,1fr) } }
+    @media (max-width:560px){ body{ padding:16px } nav{ display:none } .logo{ width:48px;height:48px } h1{ font-size:22px } #gameArea{ height:260px } }
+
+    /* small accent hover */
+    .pulse-on-hover:hover{ transform:translateY(-6px) scale(1.02); box-shadow:0 18px 40px rgba(0,0,0,0.6) }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#">
+        <div class="logo" aria-hidden="true"><span>FZ</span></div>
+        <div>
+          <div style="font-weight:900; font-size:16px">FPS Zone</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.7)">Tembak-tembakan • Demo</div>
+        </div>
+      </a>
+
+      <nav aria-label="Navigasi utama">
+        <a href="#home">Beranda</a>
+        <a href="#about">Tentang</a>
+        <a href="#gallery">Galeri</a>
+        <a href="#download">Download</a>
+        <a href="#contact">Kontak</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <div class="card">
+        <span class="tag">FPS • Tembak-tembakan</span>
+        <h1>FPS Zone — Rasakan Intensitas Pertempuran</h1>
+        <p class="lead">Situs demo ini menampilkan tema warna bendera Palestina, musik latar sintetis, animasi, dan mini-game tembak target sederhana untuk latihan akurasi.</p>
+
+        <div class="actions">
+          <button class="btn primary" id="openStart">Mulai Main</button>
+          <button class="btn ghost" id="toggleMusic">Nyalakan Musik</button>
+          <button class="btn" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">Lihat Galeri</button>
+        </div>
+
+        <div style="margin-top:12px; color:rgba(255,255,255,0.8)">
+          <div><strong>Mode populer:</strong> Deathmatch • Battle Royale • Team Objective</div>
+          <div style="margin-top:6px"><strong>Senjata unggulan:</strong> AR • Sniper • SMG</div>
+        </div>
+      </div>
+
+      <aside class="hud">
+        <div class="stat pulse-on-hover">
+          <div class="icon">RP</div>
+          <div><div style="font-weight:900">Ranked Play</div><div style="font-size:13px;color:rgba(255,255,255,0.75)">Season aktif • hadiah eksklusif</div></div>
+        </div>
+        <div class="stat pulse-on-hover">
+          <div class="icon">EV</div>
+          <div><div style="font-weight:900">Event Mingguan</div><div style="font-size:13px;color:rgba(255,255,255,0.75)">Challenge & quest baru</div></div>
+        </div>
+        <div class="stat pulse-on-hover">
+          <div class="icon">UP</div>
+          <div><div style="font-weight:900">Patch Note</div><div style="font-size:13px;color:rgba(255,255,255,0.75)">Perbaikan senjata & bugfix</div></div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- ABOUT -->
+    <section id="about" class="card">
+      <h3 style="margin:0 0 10px 0; font-weight:900">Tentang Game</h3>
+      <div style="display:flex; gap:16px; flex-wrap:wrap">
+        <div style="flex:1; min-width:220px">
+          <p>FPS Zone adalah demo situs untuk menampilkan antarmuka yang cocok bagi komunitas game tembak-tembakan: informasi, galeri, dan latihan akurasi sederhana.</p>
+          <ul style="padding-left:18px; color:rgba(255,255,255,0.85)">
+            <li>Mode PvP & Co-op</li>
+            <li>Ranked & Casual matchmaking</li>
+            <li>Event mingguan & seasonal</li>
+          </ul>
+        </div>
+        <div style="width:320px">
+          <div style="font-weight:900; margin-bottom:8px">Statistik Singkat</div>
+          <div style="display:flex; gap:8px; align-items:center"><div style="background:var(--pal-red); padding:8px 12px; border-radius:10px; font-weight:900">Players</div><div style="color:rgba(255,255,255,0.85)">2.1M aktif</div></div>
+          <div style="height:12px"></div>
+          <div style="display:flex; gap:8px; align-items:center"><div style="background:var(--pal-green); padding:8px 12px; border-radius:10px; font-weight:900">Event</div><div style="color:rgba(255,255,255,0.85)">Event setiap Jumat</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery">
+      <div style="display:flex; gap:12px; align-items:center; margin-bottom:10px">
+        <h3 style="margin:0; font-weight:900">Galeri Screenshot</h3>
+        <div style="color:rgba(255,255,255,0.6); font-size:14px">— tangkapan aksi & map</div>
+      </div>
+      <div class="gallery">
+        <div class="shot" style="background-image: linear-gradient(180deg, rgba(206,17,38,0.2), rgba(0,122,61,0.2));"><div style="position:absolute; left:12px; bottom:12px; font-weight:900">Action Shot</div></div>
+        <div class="shot" style="background-image: linear-gradient(180deg, rgba(206,17,38,0.14), rgba(0,122,61,0.14));"><div style="position:absolute; left:12px; bottom:12px; font-weight:900">Sniper View</div></div>
+        <div class="shot" style="background-image: linear-gradient(180deg, rgba(206,17,38,0.08), rgba(0,122,61,0.08));"><div style="position:absolute; left:12px; bottom:12px; font-weight:900">Map Overview</div></div>
+      </div>
+    </section>
+
+    <!-- DOWNLOAD -->
+    <section id="download" class="card">
+      <h3 style="margin:0 0 10px 0; font-weight:900">Download</h3>
+      <p style="margin:0 0 10px 0">Contoh tombol download — ganti tautan (href) jika ingin menautkan file asli.</p>
+      <div class="downloads">
+        <a class="download-badge" href="#"><div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(90deg,var(--pal-red),var(--pal-green));display:grid;place-items:center;font-weight:900">APK</div><div><div style="font-weight:900">Android APK</div><div style="font-size:13px;color:rgba(255,255,255,0.75)">v2.3 • 220MB</div></div></a>
+        <a class="download-badge" href="#"><div style="width:44px;height:44px;border-radius:8px;background:var(--pal-black);display:grid;place-items:center;font-weight:900">WEB</div><div><div style="font-weight:900">Main di Browser</div><div style="font-size:13px;color:rgba(255,255,255,0.75)">No install</div></div></a>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="card">
+      <h3 style="margin:0 0 10px 0; font-weight:900">Kontak</h3>
+      <p style="margin:0 0 8px 0">Ingin info lebih lanjut? Kirim pesan ke kami (simulasi).</p>
+      <form onsubmit="event.preventDefault(); alert('Terima kasih — pesan terkirim (simulasi).')">
+        <input type="text" placeholder="Nama lengkap" required style="width:100%; margin-bottom:8px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:rgba(255,255,255,0.02); color:var(--pal-white)">
+        <input type="email" placeholder="Email" required style="width:100%; margin-bottom:8px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:rgba(255,255,255,0.02); color:var(--pal-white)">
+        <textarea rows="4" placeholder="Tulis pesan..." required style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:rgba(255,255,255,0.02); color:var(--pal-white)"></textarea>
+        <div style="display:flex; gap:8px; margin-top:8px">
+          <button class="btn primary" type="submit">Kirim</button>
+          <button class="btn ghost" type="reset">Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <footer>© <strong>FPS Zone</strong> — Tema: Palestina • Dibuat dengan ❤️</footer>
+  </div>
+
+  <!-- START OVERLAY + GAME -->
+  <div id="startOverlay" aria-hidden="false">
+    <div class="start-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px">
+        <div style="text-align:left">
+          <div class="start-title">Mulai Main — Latihan Tembak</div>
+          <div class="start-sub">Klik tombol "Mulai" lalu tembak target yang bergerak. Musik bisa dinyalakan/ dimatikan.</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:900; font-size:18px">FPS Zone</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.7)">Tema Palestina</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px" class="hud-top">
+        <div class="score">Skor: <span id="score">0</span></div>
+        <div class="controls">
+          <button class="btn ghost" id="btnToggleMusic">Nyalakan Musik</button>
+          <button class="btn" id="btnResetScore">Reset Skor</button>
+        </div>
+      </div>
+
+      <div id="gameArea" aria-label="Area permainan">
+        <div class="crosshair"><div></div></div>
+        <!-- target elemen akan dibuat oleh JS -->
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:14px">
+        <button class="btn primary" id="btnStartGame">Mulai</button>
+        <button class="btn ghost" id="btnCloseOverlay">Kembali</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ===== WebAudio sintetis (ambient loop + beat) =====
+       Musik hanya dimulai setelah interaksi pengguna.
+    */
+    let audioCtx = null;
+    let masterGain = null;
+    let isMusicOn = false;
+
+    function initAudio(){
+      if(audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.12;
+      masterGain.connect(audioCtx.destination);
+
+      // ambient pad (3 oscillators slightly detuned)
+      const padFreqs = [220, 277.18, 329.63]; // A3, C#4, E4-ish
+      padFreqs.forEach((f, i) => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = f * (1 + (Math.random()-0.5)*0.02);
+        g.gain.value = 0.04;
+        o.connect(g);
+        g.connect(masterGain);
+        o.start();
+      });
+
+      // simple rhythmic pulse using noise + filter
+      const bufferSize = 2 * audioCtx.sampleRate;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) output[i] = (Math.random() * 2 - 1) * 0.25;
+      const noiseSource = audioCtx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      noiseSource.loop = true;
+
+      const noiseFilter = audioCtx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = 200;
+      noiseSource.connect(noiseFilter);
+
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.value = 0.0; // start silent
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(masterGain);
+      noiseSource.start();
+
+      // periodic beat using scheduled gain automation
+      function scheduleBeat() {
+        const now = audioCtx.currentTime;
+        for (let i = 0; i < 8; i++) {
+          const t = now + i * 0.4;
+          noiseGain.gain.cancelScheduledValues(t);
+          noiseGain.gain.setValueAtTime(0.0, t);
+          noiseGain.gain.linearRampToValueAtTime(0.16, t + 0.02);
+          noiseGain.gain.linearRampToValueAtTime(0.0, t + 0.12);
+        }
+        setTimeout(scheduleBeat, 3200);
+      }
+      scheduleBeat();
+    }
+
+    function toggleMusicUI(on){
+      document.getElementById('toggleMusic').textContent = on ? 'Matikan Musik' : 'Nyalakan Musik';
+      document.getElementById('btnToggleMusic').textContent = on ? 'Matikan Musik' : 'Nyalakan Musik';
+      document.getElementById('btnToggleMusic').classList.toggle('primary', on);
+    }
+
+    document.getElementById('toggleMusic').addEventListener('click', () => {
+      if(!audioCtx) initAudio();
+      if(!isMusicOn){
+        audioCtx.resume && audioCtx.resume();
+        isMusicOn = true;
+        toggleMusicUI(true);
+      } else {
+        audioCtx.suspend && audioCtx.suspend();
+        isMusicOn = false;
+        toggleMusicUI(false);
+      }
+    });
+
+    document.getElementById('btnToggleMusic').addEventListener('click', () => {
+      // same as above, but ensures audio init on first user click
+      if(!audioCtx) initAudio();
+      if(!isMusicOn){
+        audioCtx.resume && audioCtx.resume();
+        isMusicOn = true;
+        toggleMusicUI(true);
+      } else {
+        audioCtx.suspend && audioCtx.suspend();
+        isMusicOn = false;
+        toggleMusicUI(false);
+      }
+    });
+
+    // START OVERLAY controls
+    const overlay = document.getElementById('startOverlay');
+    document.getElementById('openStart').addEventListener('click', () => {
+      overlay.style.display = 'grid';
+      overlay.setAttribute('aria-hidden', 'false');
+    });
+    document.getElementById('btnCloseOverlay').addEventListener('click', () => {
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-hidden', 'true');
+      stopGame();
+    });
+
+    // mini-game: klik target yang bergerak
+    const gameArea = document.getElementById('gameArea');
+    const scoreEl = document.getElementById('score');
+    let score = 0;
+    let target = null;
+    let gameInterval = null;
+    let targetSpeed = 1200; // ms between moves
+
+    function createTarget(){
+      removeTarget();
+      target = document.createElement('div');
+      target.className = 'target';
+      target.textContent = '●';
+      gameArea.appendChild(target);
+      positionTargetRandom();
+      target.addEventListener('click', onTargetClick);
+    }
+    function removeTarget(){
+      if(target){
+        target.removeEventListener('click', onTargetClick);
+        target.remove();
+        target = null;
+      }
+    }
+    function positionTargetRandom(){
+      const pad = 20;
+      const rect = gameArea.getBoundingClientRect();
+      const w = rect.width, h = rect.height;
+      const tx = Math.max(pad, Math.random() * (w - pad - 64));
+      const ty = Math.max(pad, Math.random() * (h - pad - 64));
+      if(target) target.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
+    }
+    function onTargetClick(e){
+      e.stopPropagation();
+      score += 10;
+      scoreEl.textContent = score;
+      // feedback pop
+      target.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(0)' }], { duration: 260 });
+      // quick respawn
+      positionTargetRandom();
+      // small difficulty ramp
+      targetSpeed = Math.max(450, targetSpeed - 18);
+      restartTargetInterval();
+    }
+
+    function restartTargetInterval(){
+      if(gameInterval) clearInterval(gameInterval);
+      gameInterval = setInterval(() => {
+        if(target) {
+          // fade out move
+          target.animate([{ transform: target.style.transform }, { transform: target.style.transform + ' translateY(-6px)' }, { transform: target.style.transform }], { duration: 350, easing: 'ease-in-out' });
+          positionTargetRandom();
+        }
+      }, targetSpeed);
+    }
+
+    function startGame(){
+      score = 0;
+      scoreEl.textContent = score;
+      targetSpeed = 1200;
+      createTarget();
+      restartTargetInterval();
+    }
+    function stopGame(){
+      if(gameInterval) clearInterval(gameInterval);
+      removeTarget();
+    }
+
+    document.getElementById('btnStartGame').addEventListener('click', () => {
+      // ensure audio initiated on first user gesture
+      if(!audioCtx) initAudio();
+      audioCtx && audioCtx.resume && audioCtx.resume();
+      isMusicOn = true;
+      toggleMusicUI(true);
+
+      startGame();
+    });
+
+    document.getElementById('btnResetScore').addEventListener('click', () => {
+      score = 0;
+      scoreEl.textContent = score;
+    });
+
+    // close overlay if user clicks outside card (optional)
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay){
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden','true');
+        stopGame();
+      }
+    });
+
+    // crosshair follows mouse on desktop, fixed on touch
+    const crosshair = document.querySelector('.crosshair');
+    window.addEventListener('mousemove', (e) => {
+      const rect = gameArea.getBoundingClientRect();
+      // only when mouse is over game area
+      if(e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom){
+        crosshair.style.left = (e.clientX - rect.left) + 'px';
+        crosshair.style.top = (e.clientY - rect.top) + 'px';
+        crosshair.style.margin = '0';
+      }
+    });
+
+    // accessibility: keyboard start (Enter) when overlay visible
+    window.addEventListener('keydown', (e) => {
+      if(overlay.style.display !== 'none' && (e.key === 'Enter' || e.key === ' ')){
+        e.preventDefault();
+        startGame();
+      }
+    });
+
+    // init: hide overlay until user clicks "Mulai Main" (but keep visible initially to guide)
+    // overlay present by default (initially shown). If you prefer hidden on load, uncomment next two lines:
+    // overlay.style.display = 'none';
+    // overlay.setAttribute('aria-hidden','true');
+
+    // small niceties: smooth scroll for nav links
+    document.querySelectorAll('nav a').forEach(a => a.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      const tgt = document.querySelector(a.getAttribute('href'));
+      if(tgt) tgt.scrollIntoView({behavior:'smooth'});
+    }));
+
+    // Helpful: prevent accidental long-tap selection
+    document.addEventListener('selectstart', (e) => e.preventDefault());
+  </script>
+</body>
+</html>
